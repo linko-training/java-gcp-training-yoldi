@@ -18,21 +18,9 @@ steps:
       - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/${_SERVICE_NAME}'
       - '--region=${_REGION}'
       - '--platform=managed'
-      - '--no-allow-unauthenticated'
+      - '--allow-unauthenticated'
       - '--service-account=${_RUNTIME_SA}@$PROJECT_ID.iam.gserviceaccount.com'
       - '--set-env-vars=GCS_BUCKET=${_BUCKET},GCS_PREFIX=${_BUCKET_PREFIX}'
-
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args:
-      - 'run'
-      - 'services'
-      - 'add-iam-policy-binding'
-      - '${_SERVICE_NAME}'
-      - '--region=${_REGION}'
-      - '--member=user:yalavez@linko.mx'
-      - '--role=roles/run.invoker'
-      - '--project=$PROJECT_ID'
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -43,4 +31,5 @@ substitutions:
   _RUNTIME_SA: 'reto1-runtime'
   _BUCKET: 'linko-challenge-files'
   _SERVICE_NAME: 'linko-java-api-jr'
+  _BUCKET_PREFIX: 'jr-uploads/'
   _BUCKET_PREFIX: 'jr-uploads/'
