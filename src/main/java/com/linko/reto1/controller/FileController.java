@@ -36,16 +36,16 @@ class  FileController{
 
 
 //actualizar producto
-    @PutMapping("/{id}")
-    public File update(@PathVariable String id, @RequestBody Map<String, String> body) {
+    @PutMapping("/{name}")
+    public File update(@PathVariable String name, @RequestBody Map<String, String> body) {
 
-        return service.update(id,body.get("name"));
+        return service.update(name, body.get("name"));
     }
 
-    @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable String id) {
+    @DeleteMapping("/{name}")
+    public boolean delete(@PathVariable String name) {
 
-        return service.delete(id);
+        return service.delete(name);
 
     }
 

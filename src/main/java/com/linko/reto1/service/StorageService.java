@@ -47,24 +47,24 @@ public class StorageService {
         return toFile(storage.create(blobInfo, file.getBytes()));
     }
 
-    public File update(String id, String name) {
+    public File update(String name, String newName) {
         // GCS no renombra in-place: copiar al nuevo nombre y borrar el original
-        Blob source = storage.get(BlobId.of(bucketName, prefijo + id));
+        Blob source = storage.get(BlobId.of(bucketName, prefijo + name));
         if (source == null) return null;
 
-        Blob renamed = source.copyTo(BlobId.of(bucketName, prefijo + name)).getResult();
+        Blob renamed = source.copyTo(BlobId.of(bucketName, prefijo + newName)).getResult();
         source.delete();
         return toFile(renamed);
     }
 
-    public boolean delete(String id) {
-        return storage.delete(BlobId.of(bucketName, prefijo + id));
+    public boolean delete(String name) {
+        return storage.delete(BlobId.of(bucketName, prefijo + name));
     }
 
     private File toFile(Blob blob) {
-        // el nombre del objeto (sin prefijo) hace de id estable y derivable de GCS
+        // el nombre del objeto (sin prefijo) es el identificador, derivable de GCS
         String name = blob.getName().substring(blob.getName().lastIndexOf('/') + 1);
         long size = blob.getSize() == null ? 0 : blob.getSize();
-        return new File(name, name, size, "gs://" + bucketName + "/" + blob.getName());
+        return new File(name, size, "gs://" + bucketName + "/" + blob.getName());
     }
 }
