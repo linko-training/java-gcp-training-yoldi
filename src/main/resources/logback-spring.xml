@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Consola: visibilidad en desarrollo local -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Cloud Logging: emite los logs como JSON estructurado a stdout.
+         Cloud Run ingiere stdout automaticamente y Cloud Logging lo parsea,
+         por lo que NO se necesita el rol roles/logging.logWriter.
+         Las entradas del MDC se convierten en labels consultables. -->
+    <appender name="CLOUD" class="com.google.cloud.logging.logback.LoggingAppender">
+        <!-- Nombre del log dentro de Cloud Logging -->
+        <log>reto1-app</log>
+        <!-- Escribe el JSON a stdout en vez de llamar a la API directamente -->
+        <redirectToStdout>true</redirectToStdout>
+        <!-- Solo se envian logs de nivel INFO o superior -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- En la nube usamos Cloud Logging; en local, consola.
+         El perfil "local" se activa con -Dspring.profiles.active=local -->
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!local">
+        <root level="INFO">
+            <appender-ref ref="CLOUD"/>
+        </root>
+    </springProfile>
+
+</configuration>
